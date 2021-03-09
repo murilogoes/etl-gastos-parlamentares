@@ -2,6 +2,7 @@ package com.fbd.gastoparlamentar.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fbd.gastoparlamentar.service.CargaService;
+import com.fbd.gastoparlamentar.service.CargaSimplificadaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -14,10 +15,13 @@ public class CargaConfiguration implements
     @Autowired
     CargaService cargaService;
 
+    @Autowired
+    CargaSimplificadaService cargaSimplificadaService;
+
     @Override public void onApplicationEvent(ContextRefreshedEvent event) {
 
-//        cargaService.lideranca();
-        cargaService.despesa();
+        cargaSimplificadaService.cargaCsv();
+
 
 /*
         try {
@@ -28,6 +32,12 @@ public class CargaConfiguration implements
             e.printStackTrace();
         }
 */
+
+//        cargaService.lideranca();
+//        cargaService.subCota();
+//        cargaService.fornecedor();
+//        cargaService.despesa();
+
 
     }
 

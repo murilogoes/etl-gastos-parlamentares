@@ -62,6 +62,7 @@ public class CargaService {
     PassagemAereaRepository passagemAereaRepository;
 
     static private String URL_CAMARA =  "https://dadosabertos.camara.leg.br/api/v2";
+    public String[] arquivos = {"2019.csv", "2020.csv", "2021.csv"};
 
 
     public void legislatura() throws JsonProcessingException {
@@ -109,6 +110,7 @@ public class CargaService {
 
 
     public void lideranca() {
+
         logger.info("carga lideranca");
         List<List<String>> records = new ArrayList<>();
 
@@ -116,7 +118,10 @@ public class CargaService {
         Integer id = 1;
         String codigoParlamentar = "";
         Integer legislatura = 0;
-            try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/2020.csv"))) {
+        for (String arquivo: arquivos) {
+            try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/" + arquivo))) {
+
+                //try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/2020.csv"))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     String[] values = line.split(";");
@@ -142,7 +147,7 @@ public class CargaService {
                             }
                         }
                     }
-                    records.add(Arrays.asList(values));
+                    //records.add(Arrays.asList(values));
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -151,13 +156,13 @@ public class CargaService {
             }
         logger.info("finalizando carga lideranca");
 
-        //}
+        }
     }
 
 
 
     public void subCota() {
-        String[] arquivos = {"2018.csv", "2019.csv", "2020.csv"};
+        logger.info("Carga de subcota");
 
         List<List<String>> records = new ArrayList<>();
         Integer codigo = 0;
@@ -175,7 +180,7 @@ public class CargaService {
                         subcotaRepository.save(subcota);
                         // logger.info(codigo + " " + sub);
                     }
-                    records.add(Arrays.asList(values));
+                    //records.add(Arrays.asList(values));
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -188,19 +193,17 @@ public class CargaService {
     public void fornecedor() {
         logger.info("Carga de fornecedor");
 
-        String[] arquivos = {"2018.csv", "2019.csv", "2020.csv"};
-
         List<List<String>> records = new ArrayList<>();
         String cnpj = "";
         String descricao = "";
 
-        //for (String arquivo: arquivos) {
-            // try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/" + arquivo))) {
-            try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/2020.csv"))) {
+        for (String arquivo: arquivos) {
+            try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/" + arquivo))) {
+            // try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/2020.csv"))) {
                 String line;
                 int i = 0;
                 while ((line = br.readLine()) != null) {
-                    logger.info("registro numero " + i);
+                    logger.info("fornecedor registro numero " + i);
                     String[] values = line.split(";");
                     if (!values[13].contains("txtCNPJCPF")) {
                         cnpj = values[13].replaceAll("[^0-9]", "");
@@ -227,14 +230,12 @@ public class CargaService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-     //   }
+        }
         logger.info("Finalizando Carga de fornecedor");
     }
 
     public void despesa() {
         logger.info("Carga de despesa");
-
-        String[] arquivos = {"2018.csv", "2019.csv", "2020.csv"};
 
         List<List<String>> records = new ArrayList<>();
 
@@ -256,15 +257,15 @@ public class CargaService {
         String nomeParlamentar = "";
 
 
-        // for (String arquivo: arquivos) {
-            //try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/" + arquivo))) {
-            try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/2020.csv"))) {
+        for (String arquivo: arquivos) {
+            try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/" + arquivo))) {
+            //try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/2020.csv"))) {
 
             String line;
             int i = 0;
 
                 while ((line = br.readLine()) != null) {
-                    logger.info("registro numero " + i);
+                    logger.info("despesa registro numero " + i);
 
                     String[] values = line.split(";");
                     if (!values[13].contains("txtCNPJCPF")) {
@@ -313,14 +314,16 @@ public class CargaService {
                             else
                                 idSubcota = 0;
 
-                            if (NumberUtils.isParsable(values[2].replace("\"", "")))
+                            if (NumberUtils.isParsable(values[2].replace("\"", ""))) {
                                 idParlamentar = Integer.parseInt(values[2].replace("\"", ""));
-                            else
-                                nomeParlamentar = values[0].replace("\"","");
+                            }
+                            else {
+                                nomeParlamentar = values[0].replace("\"", "");
                                 Parlamentar p = parlamentarRepository.findByNome(nomeParlamentar);
-                                if (p != null)
+                                if (p != null) {
                                     idParlamentar = p.getId();
-
+                                }
+                            }
                             if (isCNPJ(cnpj)) {
                                 fornecedor = fornecedorRepository.findByCnpj(cnpj);
 
@@ -357,7 +360,7 @@ public class CargaService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        // }
+        }
         logger.info("Finalizando Carga de despesa");
     }
 
