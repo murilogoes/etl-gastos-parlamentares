@@ -91,22 +91,9 @@ public class CargaSimplificadaService {
     public void parlamentar() throws JsonProcessingException {
 
         logger.info("dando carga de parlamentares");
-        /*
-        for (Parlamentar p: parlamentarDados.getDados()) {
-            Partido partido = partidoRepository.findBySigla(p.getSiglaPartido());
-            Uf uf = ufRepository.findBySigla(p.getSiglaUf());
 
-            p.setIdPartido(partido.getId());
-            p.setIdUf(uf.getId());
-            p.setLideranca(false);
 
-            parlamentarRepository.save(p);
-        }
-        */
 
-        logger.info("finalizando carga de parlamentares");
-
-        logger.info("carga lideranca");
         List<List<String>> records = new ArrayList<>();
 
         String nome = "";
@@ -149,9 +136,9 @@ public class CargaSimplificadaService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            logger.info("finalizando carga lideranca");
-
         }
+
+        logger.info("finalizando carga de parlamentares");
 
 
 
@@ -170,8 +157,10 @@ public class CargaSimplificadaService {
                     logger.info("Arquivo " + iArquivo + " iteracao " + iCount);
                     String[] values = line.split(";");
                     if (!values[8].contains("numSubCota")) {
-                        //subcota(values);
-                        //fornecedor(values);
+                        legislatura();
+                        partido();
+                        subcota(values);
+                        fornecedor(values);
                         parlamentar(values);
                         despesa(values);
                     }
